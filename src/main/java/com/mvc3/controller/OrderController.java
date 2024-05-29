@@ -20,11 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
 
     private final OrderService orderService;
+    private final ObjectMapper objectMapper;
 
     @PostMapping
     public ResponseEntity<String> addOrder(@RequestBody String orderJson) {
         try {
-            Order order = new ObjectMapper().readValue(orderJson, Order.class);
+            Order order = objectMapper.readValue(orderJson, Order.class);
             orderService.createOrder(order);
             return ResponseEntity.status(HttpStatus.CREATED).body("Order added successfully");
         } catch (JsonProcessingException e) {
@@ -36,7 +37,7 @@ public class OrderController {
     public ResponseEntity<String> getOrder(@PathVariable Long orderId) {
         Order order = orderService.findOrderById(orderId);
         try {
-            return ResponseEntity.ok(new ObjectMapper().writeValueAsString(order));
+            return ResponseEntity.ok(objectMapper.writeValueAsString(order));
         } catch (JsonProcessingException e) {
             return ResponseEntity.status(500).body("Error converting order to JSON");
         }

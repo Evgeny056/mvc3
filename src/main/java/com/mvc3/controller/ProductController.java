@@ -25,6 +25,7 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+    private final ObjectMapper objectMapper;
 
     @GetMapping
     public ResponseEntity<List<Product>> getAllProducts() {
@@ -35,7 +36,7 @@ public class ProductController {
     public ResponseEntity<String> getProductById(@PathVariable("productId") Long productId) {
         Product product = productService.getProductById(productId);
             try {
-                return ResponseEntity.ok(new ObjectMapper().writeValueAsString(product.getName()));
+                return ResponseEntity.ok(objectMapper.writeValueAsString(product.getName()));
             } catch (JsonProcessingException e) {
                 return ResponseEntity.status(500).body("Error converting product to JSON");
             }
@@ -44,7 +45,7 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<String> createProduct(@RequestBody String productJson) {
        try {
-           Product product = new ObjectMapper().readValue(productJson, Product.class);
+           Product product = objectMapper.readValue(productJson, Product.class);
            productService.createProduct(product);
            return ResponseEntity.status(HttpStatus.CREATED).body("Product created successfully");
        } catch (JsonProcessingException e) {
@@ -57,7 +58,7 @@ public class ProductController {
                                                 @RequestBody String productJson)
     {
         try {
-            Product productDetails = new ObjectMapper().readValue(productJson, Product.class);
+            Product productDetails = objectMapper.readValue(productJson, Product.class);
             productService.updateProduct(productId, productDetails);
             return ResponseEntity.ok("Product updated successfully");
         } catch (JsonProcessingException e) {
